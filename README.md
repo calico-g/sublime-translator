@@ -1,5 +1,7 @@
 Important things!!!!
 
+* Right now this only works for sublime text2
+
 * translator.py needs to live in a folder called Translator, inside sublime's Packages. Something like this:
 /Users/calico/Library/Application Support/Sublime Text 2/Packages/Translator
 
