@@ -1,4 +1,7 @@
 import sublime, sublime_plugin
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), "PyYAML-3.11"))
 import yaml
 
 class TranslatorCommand(sublime_plugin.TextCommand):
