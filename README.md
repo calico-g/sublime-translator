@@ -5,6 +5,8 @@ Important things!!!!
 
 * the file which is being written to is hard-coded as '/Users/calico//cx/CXROR/config/locales/en.yml', needs to changed to whatever the local language file is.
 
+* you may also have to have the AAAPackageDev packages installed in your sublime. 
+
 to use:
 
 1. go to the file you want to translate
