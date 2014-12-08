@@ -64,10 +64,10 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
 		#for rails view
 		if "app" in path_name and "views" in path_name:
-			mustache = "<%= \"#{t '"
+			mustache = "<%= t \""
 			for p in path_name[1:]:
 				mustache = mustache + p + "."
-			mustache = mustache + new_key + "' }\" %>"
+			mustache = mustache + new_key + "\" %>"
 
 		for region in self.view.sel():
 			if not region.empty():
@@ -78,6 +78,6 @@ def formatPath(path):
 	# this assumes the path will be 'Users/someone/something/CXROR/app/blah/blah/blah'
 	p = path.partition('CXROR')[2]
 	p = p.split('/')[1:]
-	p.insert(0, unicode('en'))
+	p.insert(0, 'en')
 	p[-1] = p[-1].partition('.')[0]
 	return p
