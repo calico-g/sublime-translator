@@ -5,9 +5,9 @@ Important things!!!!
 * translator.py needs to live in a folder called Translator, inside sublime's Packages. Something like this:
 /Users/calico/Library/Application Support/Sublime Text 2/Packages/Translator
 
-* the file which is being written to is hard-coded as '/Users/calico//cx/CXROR/config/locales/en.yml', needs to changed to whatever the local language file is.
+* the file which is being written to is hard-coded as '/Users/calico//cx/CXROR/config/locales/en.yml', needs to be changed to whatever the local language file is.
 
-* you may also have to have the AAAPackageDev packages installed in your sublime. 
+* you may also need to install AAAPackageDev packages in sublime. 
 
 to use:
 
