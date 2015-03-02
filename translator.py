@@ -3,6 +3,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "PyYAML-3.11"))
 import yaml
+import re
 
 class TranslatorCommand(sublime_plugin.TextCommand):
   def __init__(self, view):
@@ -16,14 +17,16 @@ class TranslatorCommand(sublime_plugin.TextCommand):
         sublime.error_message("please select some text")
       else:
         self.selection = str(self.view.substr(region))
+        suggested_key = re.sub(r'([^\s\w]|_)+', '', self.selection)
 
     # get new key
     message = "create a new key for this text:"
-    sublime.active_window().show_input_panel(message, self.selection, self.on_done, None, None)
+    sublime.active_window().show_input_panel(message, suggested_key, self.on_done, None, None)
 
   def on_done(self, input):
     try:
       new_key = input
+      # new_key = re.sub(r'([^\s\w]|_)+', '', new_key)
       self.view.run_command("write_to_dict", {"new_key": new_key, "selection": self.selection} )
     except ValueError:
       pass
@@ -43,7 +46,7 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
     placeholder = lang_file
     for index in range(len(path_name)):
-      print placeholder.keys()
+      # print placeholder.keys()
       path_name[index] = str(path_name[index])
       if path_name[index] in placeholder.keys():
         placeholder = placeholder[path_name[index]]
@@ -69,7 +72,7 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
     #this makes the short version, which is preprocessed into the uglier version on the fly
     if "templates" in path_name:
-      mustache = '$translate("' + new_key + '")'
+      mustache = "$translate('" + new_key + "')"
 
     #for RAILS VIEW
     # long version
