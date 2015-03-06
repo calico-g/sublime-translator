@@ -72,7 +72,7 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
     #this makes the short version, which is preprocessed into the uglier version on the fly
     if "templates" in path_name:
-      mustache = "$translate('" + new_key + "')"
+      mustache = "$translate('" + new_key + "')$"
 
     #for RAILS VIEW
     # long version
