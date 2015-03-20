@@ -35,8 +35,16 @@ class TranslatorCommand(sublime_plugin.TextCommand):
 class writeToDictCommand(sublime_plugin.TextCommand):
   def run(self, edit, **args):
 
+    in_rails_tag = False
     new_key = str(args['new_key'])
     selection = str(args['selection'])
+    
+    # if a human has added a % to the key, treat this as text within a rails tag
+    if new_key[-1] == "%":
+      in_rails_tag = True
+      new_key = new_key.strip("%")
+      selection = selection.strip("'")
+      selection = selection.strip('"')
     
     # get path name
     path_name = formatPath(self.view.file_name())
@@ -84,7 +92,10 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
     # short version, uses a in-app helper
     if "app" in path_name and "views" in path_name:
-      mustache = "<%= translate('" + new_key + "') %>"
+      if in_rails_tag:
+        mustache = "translate('" + new_key + "')"
+      else:
+        mustache = "<%= translate('" + new_key + "') %>"
 
     # replaces original text with translation key
     for region in self.view.sel():
