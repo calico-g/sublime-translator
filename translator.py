@@ -49,7 +49,7 @@ class writeToDictCommand(sublime_plugin.TextCommand):
     # get path name
     path_name = formatPath(self.view.file_name())
 
-    f = open('/Users/calico//cx/CXROR/config/locales/en.yml')
+    f = open('/Users/calico//cx/maitred/config/locales/en.yml')
     lang_file = yaml.safe_load(f)
 
     placeholder = lang_file
@@ -63,7 +63,7 @@ class writeToDictCommand(sublime_plugin.TextCommand):
         placeholder = placeholder[path_name[index]]
     placeholder[new_key] = selection
 
-    stream = file('/Users/calico//cx/CXROR/config/locales/en.yml', 'w')
+    stream = file('/Users/calico//cx/maitred/config/locales/en.yml', 'w')
     yaml.dump(lang_file, stream)
 
     f.close()
@@ -92,6 +92,7 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
     # short version, uses a in-app helper
     if "app" in path_name and "views" in path_name:
+      print "it's rails!!!!!"
       if in_rails_tag:
         mustache = "translate('" + new_key + "')"
       else:
@@ -105,7 +106,7 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
 def formatPath(path):
   # this assumes the path will be 'Users/someone/something/CXROR/app/blah/blah/blah'
-  p = path.partition('CXROR')[2]
+  p = path.partition('maitred')[2]
   p = p.split('/')[1:]
   p.insert(0, 'en')
   p[-1] = p[-1].partition('.')[0]
