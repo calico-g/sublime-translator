@@ -92,7 +92,12 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
     # short version, uses a in-app helper
     if "app" in path_name and "views" in path_name:
-      print "it's rails!!!!!"
+      if in_rails_tag:
+        mustache = "translate('" + new_key + "')"
+      else:
+        mustache = "<%= translate('" + new_key + "') %>"
+
+    if "app" in path_name and "controllers" in path_name:
       if in_rails_tag:
         mustache = "translate('" + new_key + "')"
       else:
