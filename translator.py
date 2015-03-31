@@ -26,25 +26,19 @@ class TranslatorCommand(sublime_plugin.TextCommand):
   def on_done(self, input):
     try:
       new_key = input
-      # new_key = re.sub(r'([^\s\w]|_)+', '', new_key)
       self.view.run_command("write_to_dict", {"new_key": new_key, "selection": self.selection} )
     except ValueError:
       pass
 
-
 class writeToDictCommand(sublime_plugin.TextCommand):
   def run(self, edit, **args):
 
-    in_rails_tag = False
     new_key = str(args['new_key'])
     selection = str(args['selection'])
     
     # if a human has added a % to the key, treat this as text within a rails tag
-    if new_key[-1] == "%":
-      in_rails_tag = True
-      new_key = new_key.strip("%")
-      selection = selection.strip("'")
-      selection = selection.strip('"')
+    in_rails_tag = False
+    selection, new_key, in_rails_tag = checkRailsTag(selection, new_key, in_rails_tag)
     
     # get path name
     path_name = formatPath(self.view.file_name())
@@ -54,7 +48,6 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
     placeholder = lang_file
     for index in range(len(path_name)):
-      # print placeholder.keys()
       path_name[index] = str(path_name[index])
       if path_name[index] in placeholder.keys():
         placeholder = placeholder[path_name[index]]
@@ -68,34 +61,17 @@ class writeToDictCommand(sublime_plugin.TextCommand):
 
     f.close()
 
-    #replace selection with translation key
+    #decide if rails or js
+    if ".rb" in self.view.file_name() or "html.erb" in self.view.file_name():
+      print "It's rails!!!"
+      key = createRailsKey(in_rails_tag, new_key)
 
-    # for HANDLEBARS
-    # this makes the long version, which sucks to read
-    # if "templates" in path_name:
-    #   mustache = "{{ t '"
-    #   for p in path_name[1:]:
-    #     mustache = mustache + p + "."
-    #   mustache = mustache + new_key + "' }}"
+    elif ".js" in self.view.file_name() or "jst.hbs" in self.view.file_name():
+      print "It's javascript!!!"
+      key = createJsKey(new_key)
 
-    #this makes the short version, which is preprocessed into the uglier version on the fly
-    if "templates" in path_name:
-      mustache = "$translate('" + new_key + "')$"
-
-    #for RAILS VIEW
-    # long version
-    # if "app" in path_name and "views" in path_name:
-    #   mustache = "<%= t \""
-    #   for p in path_name[1:]:
-    #     mustache = mustache + p + "."
-    #   mustache = mustache + new_key + "\" %>"
-
-    # short version, uses a in-app helper
-    if "app" in path_name and "views" in path_name:
-      if in_rails_tag:
-        mustache = "translate('" + new_key + "')"
-      else:
-        mustache = "<%= translate('" + new_key + "') %>"
+    else:
+      print "It's something neither rails nor js, neither beast nor burden, neither fish nor fry"
 
     if "app" in path_name and "controllers" in path_name:
       if in_rails_tag:
@@ -106,8 +82,45 @@ class writeToDictCommand(sublime_plugin.TextCommand):
     # replaces original text with translation key
     for region in self.view.sel():
       if not region.empty():
-        self.view.replace(edit, region, mustache)
+        self.view.replace(edit, region, key)
 
+
+def createRailsKey(in_rails_tag, new_key):
+  #for RAILS VIEW
+  # long version
+  # if "app" in path_name and "views" in path_name:
+  #   mustache = "<%= t \""
+  #   for p in path_name[1:]:
+  #     mustache = mustache + p + "."
+  #   mustache = mustache + new_key + "\" %>"
+
+  # short version, uses a in-app helper
+  if in_rails_tag:
+    mustache = "translate('" + new_key + "')"
+  else:
+    mustache = "<%= translate('" + new_key + "') %>"
+  return mustache
+
+def createJsKey(new_key):
+  # for HANDLEBARS
+  # this makes the long version, which sucks to read
+  # if "templates" in path_name:
+  #   mustache = "{{ t '"
+  #   for p in path_name[1:]:
+  #     mustache = mustache + p + "."
+  #   mustache = mustache + new_key + "' }}"
+
+  #this makes the short version, which is preprocessed into the uglier version on the fly
+  mustache = "$translate('" + new_key + "')$"
+  return mustache
+
+def checkRailsTag(selection, new_key, in_rails_tag):
+  if new_key[-1] == "%":
+    in_rails_tag = True
+    new_key = new_key.strip("%")
+    selection = selection.strip("'")
+    selection = selection.strip('"')
+  return selection, new_key, in_rails_tag
 
 def formatPath(path):
   # this assumes the path will be 'Users/someone/something/CXROR/app/blah/blah/blah'
