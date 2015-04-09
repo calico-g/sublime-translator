@@ -62,7 +62,7 @@ class writeToDictCommand(sublime_plugin.TextCommand):
     f.close()
 
     #decide if rails or js
-    if ".rb" in self.view.file_name() or "html.erb" in self.view.file_name():
+    if ".rb" in self.view.file_name() or ".erb" in self.view.file_name():
       print "It's rails!!!"
       key = createRailsKey(in_rails_tag, new_key)
 
